@@ -137,6 +137,9 @@ class Person(object):
         self.country = person_data.get("Country")
         self.country_code = person_data.get("Country Code")
 
+
+
+
 def simpleinfogather():
     person = Person()
     print('%s Connecting to the internet' % info)
@@ -260,6 +263,141 @@ def simpleinfogather():
     print('%s %sHeight: %s%s' % (res, blue, end, person.height))
     time.sleep(0.5)
     print('%s %sWeight: %s%s' % (res, blue, end, person.weight))
+    os.mkdir(person.name)
+    os.chdir(person.name)
+    with open("%s.txt" % person.name, 'w') as file:
+       file.write(data)
+       file.close()
+       print('%s More detailed information stored in %s./%s%s directory' % (info, green, person.name, end))
+       sys.exit(0)
+
+def simplewithprofession(profession):
+    person = Person()
+    print('%s Connecting to the internet' % info)
+    time.sleep(0.5)
+    print('%s Fetching Information' % info)
+    data = '''
+{ 
+    "personal details": {  
+        "name": "%s",   
+        "gender": "%s",   
+        "birthday": "%s",
+        "zodiac": "%s",
+        "Mother Maiden Name": "%s",
+        "Family Members": "%s",
+        "Personality": "%s",
+        "Person Style": "%s",
+        "Language": "%s",
+        "Verified Status": "%s",
+        "Country": "%s",
+        "Country Code": "%s",
+        
+    "Address and Location": {
+        "street": "%s",
+        "Geo Coordinates": "%s",
+        "Timezone": "%s",
+        
+    "Employment":{
+        "Employment Status": "%s",
+        "Monthly Salary": "%s",
+        "Occupation": "%s",
+        "Company Name": "%s",
+        "Company Size": "%s",
+        "Industry": "%s",
+    
+    "Favorite": {
+        "color": "%s",
+        "Movie": "%s",
+        "Music": "%s",
+        "Song": "%s",
+        "Book": "%s",
+        "Sports": "%s",
+        "TV": "%s",
+        "Movie Star": "%s",
+        "Singer": "%s",
+        "Food": "%s",
+
+    "Financial": {
+        "Credit Card Type": "%s",
+        "Credit Card Number": "%s",
+        "CVV2": "%s",
+        "Expires On:": "%s",
+        "PayPal": "%s",
+        "Western Union MTCN": "%s",
+        "MoneyGram MTCN": "%s",
+        "Account Balance": "%s",
+        "Preferred Payment": "%s",
+
+    "phonenumber": {
+        "telephone": "%s",
+        "mobile": "%s",
+        
+    "Online Details": {
+        "Website": "%s",
+        "email": "%s",
+        "Online Status": "%s",
+        "Online Signature": "%s",
+        "Online Biography": "%s",
+        "Security Question": "%s",
+        "Security Answer": "%s",
+        "Browser User Agent": "%s",
+        
+    "Physical Characteristics": {
+        "height": "%s",
+        "weight": "%s",
+        "hair color": "%s",
+        "blood types": "%s",
+        
+    "Medical History": {
+        "Disease History": "%s",
+      
+    "Other Details": {
+        "Civil Status": "%s",
+        "Educational Background": "%s",
+        "Social Security Number": "%s",
+        "Passport": "%s",
+        "Driver License": "%s",
+        "Car License Plate": "%s",
+        "Vehicle": "%s",
+        "Register Time": "%s",
+        "Register IP": "%s",
+        "Points": "%s",
+        "Level": "%s",
+        "Number of Comments": "%s",
+        "Posted Articles": "%s",
+        "Friends": "%s",
+        "UPS Tracking Number": "%s"
+    
+}}}}}}}}}}}\n ''' % (person.name, person.gender, person.birthday, person.zodiac, person.mother_maiden_name, person.family_members, person.personality, person.person_style, person.language, person.verified_status, person.country, person.country_code, person.street, person.geo_coordinates, person.timezone, person.employment_status, person.monthly_salary, profession, person.company_name, person.company_size, person.industry, person.favorite_color, person.favorite_movie, person.favorite_music, person.favorite_song, person.favorite_book, person.favorite_sports, person.favorite_tv, person.favorite_movie_star, person.favorite_singer, person.favorite_food, person.credit_card_type, person.credit_card_number, person.cvv2, person.expires, person.paypal, person.western_union_mtcn, person.moneygram_mtcn, person.account_balance, person.preferred_payment, person.telephone, person.mobile, person.website, person.email, person.online_status, person.online_signature, person.online_biography, person.security_question, person.security_answer, person.browser_user_agent, person.height, person.weight, person.hair_color, person.blood_type, person.disease_history, person.civil_status, person.educational_background, person.social_security, person.passport, person.driver_license, person.car_license_plate, person.vehicle, person.register_time, person.register_ip, person.points, person.level, person.number_of_comments, person.posted_articles, person.friends, person.ups_tracking)
+
+    time.sleep(0.5)
+    print('%s Fetched information. The following is your Basic Identity' % info)
+    time.sleep(0.5)
+    print('%s %sName: %s%s' % (res, blue, end, person.name))
+    time.sleep(0.5)    
+    print('%s %sGender: %s%s' % (res, blue, end, person.gender))
+    time.sleep(0.5)
+    print('%s %sBirthday: %s%s' % (res, blue, end, person.birthday))
+    time.sleep(0.5)
+    print('%s %sZodiac: %s%s' % (res, blue, end, person.zodiac))
+    time.sleep(0.5)
+    print('%s %sCountry: %s%s' % (res, blue, end, person.country))
+    time.sleep(0.5)
+    print('%s %sProfession: %s%s' % (res, blue, end, profession))
+    time.sleep(0.5)
+    print('%s %sGeo Coordinates: %s%s' % (res, blue, end, person.geo_coordinates))
+    time.sleep(0.5)
+    print('%s %sTimezone: %s%s' % (res, blue, end, person.timezone))
+    time.sleep(0.5)
+    print('%s %sTelephone: %s%s' % (res, blue, end, person.telephone))
+    time.sleep(0.5)
+    print('%s %sEmail: %s%s' % (res, blue, end, person.email))
+    time.sleep(0.5)
+    print('%s %sHeight: %s%s' % (res, blue, end, person.height))
+    time.sleep(0.5)
+    print('%s %sWeight: %s%s' % (res, blue, end, person.weight))
+
+
     os.mkdir(person.name)
     os.chdir(person.name)
     with open("%s.txt" % person.name, 'w') as file:
