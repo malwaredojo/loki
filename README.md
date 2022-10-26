@@ -35,8 +35,9 @@
 # Installation & Usage
 ```
 $ git clone https://github.com/malwaredojo/loki.git
-$ cd loki/loki
+$ cd loki/
 $ pip3 install -r requirements.txt
+$ cd loki
 $ sudo python3 loki.py
 ```
 
