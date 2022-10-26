@@ -14,7 +14,7 @@
 <p align="center">
 <b><a href="https://github.com/malwaredojo/loki#installation--usage">Installation</a></b>
 <b>&ensp;•&ensp;</b>
-<b><a href="https://github.com/malwaredojo/loki#tools">List of Tools</a></b>
+<b><a href="https://github.com/malwaredojo/loki#features">Features</a></b>
 <b>&ensp;•&ensp;</b>
 <b><a href="https://github.com/malwaredojo/loki#contributions--license">Contributions</a></b>
 <b>&ensp;•&ensp;</b>
