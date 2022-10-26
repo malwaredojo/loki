@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href="https://github.com/malwaredojo/IntelBox"><img src="https://github.com/malwaredojo/loki/blob/main/imgs/loki-logo.png" alt="IntelBox" width="218" height="218"></a>
+  <a href="https://github.com/malwaredojo/loki"><img src="https://github.com/malwaredojo/loki/blob/main/imgs/loki-logo.png" alt="IntelBox" width="218" height="218"></a>
   <br>
   The Loki Framework 
   <br>
