@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 from core.colours import green, end, bad, yellow, white, sarcastic
-from core.simple import * #simpleinfogather, simpleinfogathermalewithprofession, simplewithprofession
+from core.simple import * 
 from core.simplewithpic import maininfogather
-from core.test import simpleinfogathermale, simpleinfogatherfemale
 
 
 version = '0.0.1'
