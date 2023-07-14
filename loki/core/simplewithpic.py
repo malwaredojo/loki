@@ -141,7 +141,6 @@ class Person(object):
         self.country_code = person_data.get("Country Code")
 
 
-
 def simpleinfogatherwithpic():
     person = Person()
     print('%s Connecting to the internet' % info)
@@ -162,12 +161,12 @@ def simpleinfogatherwithpic():
         "Verified Status": "%s",
         "Country": "%s",
         "Country Code": "%s",
-        
+
     "Address and Location": {
         "street": "%s",
         "Geo Coordinates": "%s",
         "Timezone": "%s",
-        
+
     "Employment":{
         "Employment Status": "%s",
         "Monthly Salary": "%s",
@@ -175,7 +174,7 @@ def simpleinfogatherwithpic():
         "Company Name": "%s",
         "Company Size": "%s",
         "Industry": "%s",
-    
+
     "Favorite": {
         "color": "%s",
         "Movie": "%s",
@@ -202,7 +201,7 @@ def simpleinfogatherwithpic():
     "phonenumber": {
         "telephone": "%s",
         "mobile": "%s",
-        
+
     "Online Details": {
         "Website": "%s",
         "email": "%s",
@@ -212,16 +211,16 @@ def simpleinfogatherwithpic():
         "Security Question": "%s",
         "Security Answer": "%s",
         "Browser User Agent": "%s",
-        
+
     "Physical Characteristics": {
         "height": "%s",
         "weight": "%s",
         "hair color": "%s",
         "blood types": "%s",
-        
+
     "Medical History": {
         "Disease History": "%s",
-      
+
     "Other Details": {
         "Civil Status": "%s",
         "Educational Background": "%s",
@@ -238,14 +237,28 @@ def simpleinfogatherwithpic():
         "Posted Articles": "%s",
         "Friends": "%s",
         "UPS Tracking Number": "%s"
-    
-}}}}}}}}}}}\n ''' % (person.name, person.gender, person.birthday, person.zodiac, person.mother_maiden_name, person.family_members, person.personality, person.person_style, person.language, person.verified_status, person.country, person.country_code, person.street, person.geo_coordinates, person.timezone, person.employment_status, person.monthly_salary, person.occupation, person.company_name, person.company_size, person.industry, person.favorite_color, person.favorite_movie, person.favorite_music, person.favorite_song, person.favorite_book, person.favorite_sports, person.favorite_tv, person.favorite_movie_star, person.favorite_singer, person.favorite_food, person.credit_card_type, person.credit_card_number, person.cvv2, person.expires, person.paypal, person.western_union_mtcn, person.moneygram_mtcn, person.account_balance, person.preferred_payment, person.telephone, person.mobile, person.website, person.email, person.online_status, person.online_signature, person.online_biography, person.security_question, person.security_answer, person.browser_user_agent, person.height, person.weight, person.hair_color, person.blood_type, person.disease_history, person.civil_status, person.educational_background, person.social_security, person.passport, person.driver_license, person.car_license_plate, person.vehicle, person.register_time, person.register_ip, person.points, person.level, person.number_of_comments, person.posted_articles, person.friends, person.ups_tracking)
+
+}}}}}}}}}}}\n ''' % (
+    person.name, person.gender, person.birthday, person.zodiac, person.mother_maiden_name, person.family_members,
+    person.personality, person.person_style, person.language, person.verified_status, person.country,
+    person.country_code, person.street, person.geo_coordinates, person.timezone, person.employment_status,
+    person.monthly_salary, person.occupation, person.company_name, person.company_size, person.industry,
+    person.favorite_color, person.favorite_movie, person.favorite_music, person.favorite_song, person.favorite_book,
+    person.favorite_sports, person.favorite_tv, person.favorite_movie_star, person.favorite_singer,
+    person.favorite_food, person.credit_card_type, person.credit_card_number, person.cvv2, person.expires,
+    person.paypal, person.western_union_mtcn, person.moneygram_mtcn, person.account_balance, person.preferred_payment,
+    person.telephone, person.mobile, person.website, person.email, person.online_status, person.online_signature,
+    person.online_biography, person.security_question, person.security_answer, person.browser_user_agent, person.height,
+    person.weight, person.hair_color, person.blood_type, person.disease_history, person.civil_status,
+    person.educational_background, person.social_security, person.passport, person.driver_license,
+    person.car_license_plate, person.vehicle, person.register_time, person.register_ip, person.points, person.level,
+    person.number_of_comments, person.posted_articles, person.friends, person.ups_tracking)
 
     time.sleep(0.5)
     print('%s Fetched information. The following is your Basic Identity' % info)
     time.sleep(0.5)
     print('%s %sName: %s%s' % (res, blue, end, person.name))
-    time.sleep(0.5)    
+    time.sleep(0.5)
     print('%s %sGender: %s%s' % (res, blue, end, person.gender))
     time.sleep(0.5)
     print('%s %sBirthday: %s%s' % (res, blue, end, person.birthday))
@@ -267,13 +280,13 @@ def simpleinfogatherwithpic():
     print('%s %sWeight: %s%s' % (res, blue, end, person.weight))
 
     os.mkdir(person.name)
-    os.chdir(person.name)   
-    os.system('wget --quiet https://thispersondoesnotexist.com/image')
-    os.system('mv image image.jpeg')
+    os.chdir(person.name)
+    os.system('curl https://thispersondoesnotexist.com/ --silent --output image.png')
+#    os.system('mv image image.jpeg')
     with open("%s.txt" % person.name, 'w') as file:
-       file.write(data)
-       file.close()
-       print('%s More detailed information stored in %s./%s%s directory' % (info, green, person.name, end))
+        file.write(data)
+        file.close()
+        print('%s More detailed information stored in %s./%s%s directory' % (info, green, person.name, end))
     person_name = person.name
     gender_by_name(person_name)
 
@@ -281,7 +294,7 @@ def simpleinfogatherwithpic():
 def gender_by_name(person_name):
     a = str(person_name)
     name_split = a.split()
-    df= name_split[0]
+    df = name_split[0]
     d = gender.Detector(case_sensitive=False)
     final_gender_from_name = d.get_gender('%s' % df)
     visual_main(a)
@@ -310,67 +323,66 @@ GENDER_LIST = ["male", "female"]
 
 box_padding = 20
 
-def get_face_box (net, frame, conf_threshold = 0.7):
-  frame_copy = frame.copy()
-  frame_height = frame_copy.shape[0]
-  frame_width = frame_copy.shape[1]
-  blob = cv2.dnn.blobFromImage(frame_copy, 1.0, (300, 300), [104, 117, 123], True, False)
 
-  net.setInput(blob)
-  detections = net.forward()
-  boxes = []
+def get_face_box(net, frame, conf_threshold=0.7):
+    frame_copy = frame.copy()
+    frame_height = frame_copy.shape[0]
+    frame_width = frame_copy.shape[1]
+    blob = cv2.dnn.blobFromImage(frame_copy, 1.0, (300, 300), [104, 117, 123], True, False)
 
-  for i in range(detections.shape[2]):
-    confidence = detections[0, 0, i, 2]
+    net.setInput(blob)
+    detections = net.forward()
+    boxes = []
 
-    if confidence > conf_threshold:
-      x1 = int(detections[0, 0, i, 3] * frame_width)
-      y1 = int(detections[0, 0, i, 4] * frame_height)
-      x2 = int(detections[0, 0, i, 5] * frame_width)
-      y2 = int(detections[0, 0, i, 6] * frame_height)
-      boxes.append([x1, y1, x2, y2])
-      cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 0), int(round(frame_height / 150)), 8)
+    for i in range(detections.shape[2]):
+        confidence = detections[0, 0, i, 2]
 
-  return frame_copy, boxes
+        if confidence > conf_threshold:
+            x1 = int(detections[0, 0, i, 3] * frame_width)
+            y1 = int(detections[0, 0, i, 4] * frame_height)
+            x2 = int(detections[0, 0, i, 5] * frame_width)
+            y2 = int(detections[0, 0, i, 6] * frame_height)
+            boxes.append([x1, y1, x2, y2])
+            cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 0), int(round(frame_height / 150)), 8)
 
-def age_gender_detector (input_path, person_name):
-  image = cv2.imread(input_path)
-  resized_image = cv2.resize(image, (640, 480))
-
-  frame = resized_image.copy()
-  frame_face, boxes = get_face_box(FACE_NET, frame)
-
-  for box in boxes:
-    face = frame[max(0, box[1] - box_padding):min(box[3] + box_padding, frame.shape[0] - 1), \
-      max(0, box[0] - box_padding):min(box[2] + box_padding, frame.shape[1] - 1)]
-
-    blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), MODEL_MEAN_VALUES, swapRB = False)
-    GENDER_NET.setInput(blob)
-    gender_predictions = GENDER_NET.forward()
-    gender = GENDER_LIST[gender_predictions[0].argmax()]
-    a = "{}".format(gender)
-
-    AGE_NET.setInput(blob)
-    age_predictions = AGE_NET.forward()
-    age = AGE_LIST[age_predictions[0].argmax()]
-    b = "{}".format(age)
-    final_function(a,b, person_name)
+    return frame_copy, boxes
 
 
-def final_function(a,b, person_name):
+def age_gender_detector(input_path, person_name):
+    image = cv2.imread(input_path)
+    resized_image = cv2.resize(image, (640, 480))
+
+    frame = resized_image.copy()
+    frame_face, boxes = get_face_box(FACE_NET, frame)
+
+    for box in boxes:
+        face = frame[max(0, box[1] - box_padding):min(box[3] + box_padding, frame.shape[0] - 1), \
+               max(0, box[0] - box_padding):min(box[2] + box_padding, frame.shape[1] - 1)]
+
+        blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), MODEL_MEAN_VALUES, swapRB=False)
+        GENDER_NET.setInput(blob)
+        gender_predictions = GENDER_NET.forward()
+        gender = GENDER_LIST[gender_predictions[0].argmax()]
+        a = "{}".format(gender)
+
+        AGE_NET.setInput(blob)
+        age_predictions = AGE_NET.forward()
+        age = AGE_LIST[age_predictions[0].argmax()]
+        b = "{}".format(age)
+        final_function(a, b, person_name)
+
+
+def final_function(a, b, person_name):
     gender_visual = a
     a = str(person_name)
     name_split = a.split()
-    df= name_split[0]
+    df = name_split[0]
     d = gender.Detector(case_sensitive=False)
     final_gender_from_name = d.get_gender('%s' % df)
     while gender_visual != final_gender_from_name:
         print('%s Gender Visual Confirmation:%s %s' % (bad, end, gender_visual))
         print('%s Getting the most suitable image%s' % (info, end))
-        os.system('rm -rf image.jpeg')
-        os.system('wget --quiet https://thispersondoesnotexist.com/image')
-        time.sleep(1)
-        os.system('mv image image.jpeg')
+        os.system('curl https://thispersondoesnotexist.com/ --silent --output image.png')
         time.sleep(1)
         gender_by_name(person_name)
     if gender_visual == final_gender_from_name:
@@ -379,10 +391,9 @@ def final_function(a,b, person_name):
         sys.exit(0)
 
 
-
-def visual_main(a):   
-    person_name = a 
-    location_of_pic = './image.jpeg'
+def visual_main(a):
+    person_name = a
+    location_of_pic = './image.png'
     output = age_gender_detector(location_of_pic, person_name)
 
 
