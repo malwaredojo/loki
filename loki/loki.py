@@ -4,7 +4,6 @@ from core.colours import green, end, bad, yellow, white, sarcastic
 from core.simple import * 
 from core.simplewithpic import maininfogather
 
-
 version = '0.0.1'
 
 def args_func():
@@ -24,7 +23,7 @@ def banner():
     print('''%s
  The %s        _____  _     _ _____
      |      |     | |____/    |   %s
-     |_____ |_____| |    \_ __|__
+     |_____ |_____| |    \\_ __|__
                                   %sFramework v%s %s\n''' % (white, green, yellow, white, version, end))
 
 def main():
@@ -57,7 +56,7 @@ def main():
 
     elif args.simplewithpic == True:
         banner()
-        maininfogather() 
+        maininfogather(args.gender)
     
     elif args.profession is not None:
         banner()
@@ -72,7 +71,7 @@ def main():
     else:
         banner()
         help_statement = "Use '-h' or '--help' to see the options"
-        exit('\n%s No argument(s) specified. '  % bad + help_statement + '\n')
+        exit('\n%s No argument(s) specified. ' % bad + help_statement + '\n')
             
 
 if __name__ == "__main__":
