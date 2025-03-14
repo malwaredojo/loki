@@ -7,9 +7,12 @@ import sys
 import gender_guesser.detector as gender
 from bs4 import BeautifulSoup
 from core.colours import *
+import json
+import csv
 
 class Person(object):
-    def __init__(self, target_gender=None):
+    # Same as in simple.py, with nationality and to_dict method
+    def __init__(self, target_gender=None, nationality=None):
         def strip_value(str):
             if 'value="' in str:
                 text_beg = str.index('value="') + 7
@@ -48,11 +51,8 @@ class Person(object):
         data_raw = str(soup.select('.col-md-8'))
         data2 = soup.select('.info-detail')
 
-        print(f"{info} Debug: Page URL = {page.url}")
-        print(f"{info} Debug: category = {category}")
-
         if not name_raw:
-            print(f"{bad} No name found on the page. Website structure may have changed.")
+            print(f"{bad} No name found on the page.")
             name = "Unknown"
         else:
             name = name_raw[0].string.strip()
@@ -83,90 +83,51 @@ class Person(object):
             person_data[category[b]] = data2[b]
 
         self.name = name
-        self.gender = person_data.get('Gender')
-        self.race = person_data.get('Race')
+        self.gender = person_data.get('Gender', 'Unknown')
         self.birthday = person_data.get('Birthday')
         self.street = person_data.get('Street')
         self.telephone = person_data.get('Telephone')
-        self.mobile = person_data.get('Mobile')
         self.email = person_data.get("Email")
-        self.height = person_data.get("Height")
-        self.weight = person_data.get("Weight")
-        self.hair_color = person_data.get("Hair Color")
-        self.blood_type = person_data.get("Blood Type")
-        self.zodiac = person_data.get('Starsign(Tropical Zodiac)')
-        self.mother_maiden_name = person_data.get("Mother's Maiden Name")
-        self.civil_status = person_data.get("Civil Status")
-        self.educational_background = person_data.get("Educational Background")
-        self.disease_history = person_data.get("Disease History")
-        self.social_security = person_data.get("Social Security Number")
-        self.passport = person_data.get("Passport")
-        self.driver_license = person_data.get("Driver License")
-        self.car_license_plate = person_data.get("Car License Plate")
-        self.employment_status = person_data.get("Employment Status")
-        self.monthly_salary = person_data.get("Monthly Salary")
         self.occupation = person_data.get("Occupation(Job Title)")
-        self.company_name = person_data.get("Company Name")
-        self.company_size = person_data.get("company_Size")
-        self.industry = person_data.get("Industry")
-        self.credit_card_type = person_data.get("Credit Card Type")
-        self.credit_card_number = person_data.get("Credit Card Number")
-        self.cvv2 = person_data.get("CVV2")
-        self.expires = person_data.get("Expires")
-        self.paypal = person_data.get("Paypal")
-        self.western_union_mtcn = person_data.get("Western Union MTCN")
-        self.moneygram_mtcn = person_data.get("MoneyGram MTCN")
-        self.account_balance = person_data.get("Account Balance")
-        self.orders_lifetime = person_data.get("Orders Lifetime")
-        self.total_consumption = person_data.get("Total Consumption")
-        self.preferred_payment = person_data.get("Preferred Payment")
-        self.family_members = person_data.get("Family Members")
-        self.vehicle = person_data.get("Vehicle")
-        self.online_status = person_data.get("Online Status")
-        self.online_signature = person_data.get("Online Signature")
-        self.online_biography = person_data.get("Online Biography")
-        self.interest = person_data.get("Interest")
-        self.favorite_color = person_data.get("Favorite Color")
-        self.favorite_movie = person_data.get("Favorite Movie")
-        self.favorite_music = person_data.get("Favorite Music")
-        self.favorite_song = person_data.get("Favorite Song")
-        self.favorite_book = person_data.get("Favorite Book")
-        self.favorite_sports = person_data.get("Favorite Sports")
-        self.favorite_tv = person_data.get("Favorite TV")
-        self.favorite_movie_star = person_data.get("Favorite Movie Star")
-        self.favorite_singer = person_data.get("Favorite Singer")
-        self.favorite_food = person_data.get("Favorite Food")
-        self.personality = person_data.get("Personality")
-        self.person_style = person_data.get("Personal Style")
-        self.website = person_data.get("Website")
-        self.register_time = person_data.get("Register Time")
-        self.register_ip = person_data.get("Register IP")
-        self.points = person_data.get("Points")
-        self.level = person_data.get("Level")
-        self.number_of_comments = person_data.get("Number of Comments")
-        self.posted_articles = person_data.get("Posted Articles")
-        self.friends = person_data.get("Friends")
-        self.language = person_data.get("Language")
-        self.verified_status = person_data.get("Verified Status")
-        self.security_question = person_data.get("Security Question")
-        self.security_answer = person_data.get("Security Answer")
-        self.browser_user_agent = person_data.get("Browser User Agent")
-        self.system = person_data.get("System")
-        self.guid = person_data.get("GUID")
-        self.geo_coordinates = person_data.get("Geo coordinates")
-        self.timezone = person_data.get("Timezone")
-        self.ups_tracking = person_data.get("UPS Tracking Number")
-        self.country = person_data.get("Country")
-        self.country_code = person_data.get("Country Code")
+        self.country = person_data.get("Country", nationality if nationality else "Unknown")
 
-        if target_gender and self.gender and self.gender.lower() != target_gender.lower():
-            print(f"{info} Generated gender ({self.gender}) does not match requested gender ({target_gender}). Regenerating...")
-            raise ValueError("Gender mismatch")
+        if target_gender and self.gender.lower() != target_gender.lower():
+            raise ValueError(f"Gender mismatch: {self.gender} != {target_gender}")
 
-def simpleinfogatherwithpic(gender=None):
+        if nationality and self.country.lower() != nationality.lower():
+            raise ValueError(f"Nationality mismatch: {self.country} != {nationality}")
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "gender": self.gender,
+            "birthday": self.birthday,
+            "street": self.street,
+            "telephone": self.telephone,
+            "email": self.email,
+            "occupation": self.occupation,
+            "country": self.country
+        }
+
+def save_data(person, output_format, filename):
+    data_dict = person.to_dict()
+    if output_format == 'txt':
+        data_str = '\n'.join(f"{k}: {v}" for k, v in data_dict.items())
+        with open(f"{filename}.txt", 'w') as file:
+            file.write(data_str)
+    elif output_format == 'json':
+        with open(f"{filename}.json", 'w') as file:
+            json.dump(data_dict, file, indent=4)
+    elif output_format == 'csv':
+        with open(f"{filename}.csv", 'w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=data_dict.keys())
+            writer.writeheader()
+            writer.writerow(data_dict)
+
+def simpleinfogatherwithpic(gender=None, nationality=None, output_format='txt'):
     while True:
         try:
-            person = Person(gender)
+            person = Person(gender, nationality)
             break
         except ValueError as e:
             print(f"{bad} {e}")
@@ -175,138 +136,12 @@ def simpleinfogatherwithpic(gender=None):
     print('%s Connecting to the internet' % info)
     time.sleep(0.5)
     print('%s Fetching Information' % info)
-    data = '''
-{ 
-    "personal details": {  
-        "name": "%s",   
-        "gender": "%s",   
-        "birthday": "%s",
-        "zodiac": "%s",
-        "Mother Maiden Name": "%s",
-        "Family Members": "%s",
-        "Personality": "%s",
-        "Person Style": "%s",
-        "Language": "%s",
-        "Verified Status": "%s",
-        "Country": "%s",
-        "Country Code": "%s",
-
-    "Address and Location": {
-        "street": "%s",
-        "Geo Coordinates": "%s",
-        "Timezone": "%s",
-
-    "Employment":{
-        "Employment Status": "%s",
-        "Monthly Salary": "%s",
-        "Occupation": "%s",
-        "Company Name": "%s",
-        "Company Size": "%s",
-        "Industry": "%s",
-
-    "Favorite": {
-        "color": "%s",
-        "Movie": "%s",
-        "Music": "%s",
-        "Song": "%s",
-        "Book": "%s",
-        "Sports": "%s",
-        "TV": "%s",
-        "Movie Star": "%s",
-        "Singer": "%s",
-        "Food": "%s",
-
-    "Financial": {
-        "Credit Card Type": "%s",
-        "Credit Card Number": "%s",
-        "CVV2": "%s",
-        "Expires On:": "%s",
-        "PayPal": "%s",
-        "Western Union MTCN": "%s",
-        "MoneyGram MTCN": "%s",
-        "Account Balance": "%s",
-        "Preferred Payment": "%s",
-
-    "phonenumber": {
-        "telephone": "%s",
-        "mobile": "%s",
-
-    "Online Details": {
-        "Website": "%s",
-        "email": "%s",
-        "Online Status": "%s",
-        "Online Signature": "%s",
-        "Online Biography": "%s",
-        "Security Question": "%s",
-        "Security Answer": "%s",
-        "Browser User Agent": "%s",
-
-    "Physical Characteristics": {
-        "height": "%s",
-        "weight": "%s",
-        "hair color": "%s",
-        "blood types": "%s",
-
-    "Medical History": {
-        "Disease History": "%s",
-
-    "Other Details": {
-        "Civil Status": "%s",
-        "Educational Background": "%s",
-        "Social Security Number": "%s",
-        "Passport": "%s",
-        "Driver License": "%s",
-        "Car License Plate": "%s",
-        "Vehicle": "%s",
-        "Register Time": "%s",
-        "Register IP": "%s",
-        "Points": "%s",
-        "Level": "%s",
-        "Number of Comments": "%s",
-        "Posted Articles": "%s",
-        "Friends": "%s",
-        "UPS Tracking Number": "%s"
-
-}}}}}}}}}}}\n ''' % (
-    person.name, person.gender, person.birthday, person.zodiac, person.mother_maiden_name, person.family_members,
-    person.personality, person.person_style, person.language, person.verified_status, person.country,
-    person.country_code, person.street, person.geo_coordinates, person.timezone, person.employment_status,
-    person.monthly_salary, person.occupation, person.company_name, person.company_size, person.industry,
-    person.favorite_color, person.favorite_movie, person.favorite_music, person.favorite_song, person.favorite_book,
-    person.favorite_sports, person.favorite_tv, person.favorite_movie_star, person.favorite_singer,
-    person.favorite_food, person.credit_card_type, person.credit_card_number, person.cvv2, person.expires,
-    person.paypal, person.western_union_mtcn, person.moneygram_mtcn, person.account_balance, person.preferred_payment,
-    person.telephone, person.mobile, person.website, person.email, person.online_status, person.online_signature,
-    person.online_biography, person.security_question, person.security_answer, person.browser_user_agent, person.height,
-    person.weight, person.hair_color, person.blood_type, person.disease_history, person.civil_status,
-    person.educational_background, person.social_security, person.passport, person.driver_license,
-    person.car_license_plate, person.vehicle, person.register_time, person.register_ip, person.points, person.level,
-    person.number_of_comments, person.posted_articles, person.friends, person.ups_tracking)
-
-    time.sleep(0.5)
-    print('%s Fetched information. The following is your Basic Identity' % info)
     time.sleep(0.5)
     print('%s %sName: %s%s' % (res, blue, end, person.name))
     time.sleep(0.5)
     print('%s %sGender: %s%s' % (res, blue, end, person.gender))
     time.sleep(0.5)
-    print('%s %sBirthday: %s%s' % (res, blue, end, person.birthday))
-    time.sleep(0.5)
-    print('%s %sZodiac: %s%s' % (res, blue, end, person.zodiac))
-    time.sleep(0.5)
     print('%s %sCountry: %s%s' % (res, blue, end, person.country))
-    time.sleep(0.5)
-    print('%s %sGeo Coordinates: %s%s' % (res, blue, end, person.geo_coordinates))
-    time.sleep(0.5)
-    print('%s %sTimezone: %s%s' % (res, blue, end, person.timezone))
-    time.sleep(0.5)
-    print('%s %sTelephone: %s%s' % (res, blue, end, person.telephone))
-    time.sleep(0.5)
-    print('%s %sEmail: %s%s' % (res, blue, end, person.email))
-    time.sleep(0.5)
-    print('%s %sHeight: %s%s' % (res, blue, end, person.height))
-    time.sleep(0.5)
-    print('%s %sWeight: %s%s' % (res, blue, end, person.weight))
 
     try:
         os.mkdir(person.name)
@@ -314,25 +149,24 @@ def simpleinfogatherwithpic(gender=None):
         print(f"{bad} Failed to create directory {person.name}: {e}")
         sys.exit(1)
     os.chdir(person.name)
-    os.system('curl https://thispersondoesnotexist.com/ --silent --output image.png')
-    with open("%s.txt" % person.name, 'w') as file:
-        file.write(data)
-        file.close()
-        print('%s More detailed information stored in %s./%s%s directory' % (info, green, person.name, end))
-    person_name = person.name
-    gender_by_name(person_name)
+    
+    # Replace os.system with requests for distribution independence
+    img_url = 'https://thispersondoesnotexist.com/'
+    img_data = requests.get(img_url).content
+    with open('image.png', 'wb') as img_file:
+        img_file.write(img_data)
+    
+    save_data(person, output_format, person.name)
+    print('%s Data stored in %s./%s%s' % (info, green, person.name, end))
+    gender_by_name(person.name)
 
 def gender_by_name(person_name):
     a = str(person_name)
     name_split = a.split()
     df = name_split[0]
     d = gender.Detector(case_sensitive=False)
-    final_gender_from_name = d.get_gender('%s' % df)
+    final_gender_from_name = d.get_gender(df)
     visual_main(a)
-
-######################################################################################################################
-################################################## Visual Code #######################################################
-######################################################################################################################
 
 FACE_PROTO = "core/weights/opencv_face_detector.pbtxt"
 FACE_MODEL = "core/weights/opencv_face_detector_uint8.pb"
@@ -356,11 +190,9 @@ def get_face_box(net, frame, conf_threshold=0.7):
     frame_height = frame_copy.shape[0]
     frame_width = frame_copy.shape[1]
     blob = cv2.dnn.blobFromImage(frame_copy, 1.0, (300, 300), [104, 117, 123], True, False)
-
     net.setInput(blob)
     detections = net.forward()
     boxes = []
-
     for i in range(detections.shape[2]):
         confidence = detections[0, 0, i, 2]
         if confidence > conf_threshold:
@@ -397,11 +229,14 @@ def final_function(a, b, person_name):
     name_split = a.split()
     df = name_split[0]
     d = gender.Detector(case_sensitive=False)
-    final_gender_from_name = d.get_gender('%s' % df)
+    final_gender_from_name = d.get_gender(df)
     while gender_visual != final_gender_from_name:
         print('%s Gender Visual Confirmation:%s %s' % (bad, end, gender_visual))
         print('%s Getting the most suitable image%s' % (info, end))
-        os.system('curl https://thispersondoesnotexist.com/ --silent --output image.png')
+        img_url = 'https://thispersondoesnotexist.com/'
+        img_data = requests.get(img_url).content
+        with open('image.png', 'wb') as img_file:
+            img_file.write(img_data)
         time.sleep(1)
         gender_by_name(person_name)
     if gender_visual == final_gender_from_name:
@@ -414,5 +249,5 @@ def visual_main(a):
     location_of_pic = './image.png'
     output = age_gender_detector(location_of_pic, person_name)
 
-def maininfogather(gender=None):
-    simpleinfogatherwithpic(gender)
+def maininfogather(gender=None, nationality=None, output_format='txt'):
+    simpleinfogatherwithpic(gender, nationality, output_format)
