@@ -8,16 +8,15 @@ import gender_guesser.detector as gender
 from bs4 import BeautifulSoup
 from core.colours import *
 
-
 class Person(object):
-    def __init__(self):
+    def __init__(self, target_gender=None):
         def strip_value(str):
-            if ('value="') in str:
+            if 'value="' in str:
                 text_beg = str.index('value="') + 7
                 text_end = str.index('"/></div>')
                 str = str[text_beg:text_end]
                 return str
-            if ('<p>') in str:
+            if '<p>' in str:
                 text_beg = str.index('<p>') + 3
                 text_end = str.index('</p>')
                 str = str[text_beg:text_end]
@@ -25,28 +24,47 @@ class Person(object):
             return str
 
         person_data = {}
-
         url = 'https://www.fakepersongenerator.com/Index/generate'
-        req = requests.post(url)
-        page = requests.get(req.url)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
+            'Referer': 'https://www.fakepersongenerator.com/'
+        }
+        
+        for _ in range(3):
+            try:
+                req = requests.post(url, headers=headers, timeout=10)
+                page = requests.get(req.url, headers=headers, timeout=10)
+                if page.status_code == 200:
+                    break
+            except requests.RequestException as e:
+                print(f"{bad} Request failed: {e}")
+                time.sleep(1)
+        else:
+            raise ConnectionError("Failed to connect to fakepersongenerator.com after 3 attempts")
 
         soup = BeautifulSoup(page.content, 'html.parser')
         category = soup.select('.info-title')
-
         name_raw = soup.select('.click')
         data_raw = str(soup.select('.col-md-8'))
         data2 = soup.select('.info-detail')
 
-        index = data_raw.find('<p')  # index for parsing data_raw
+        print(f"{info} Debug: Page URL = {page.url}")
+        print(f"{info} Debug: category = {category}")
 
-        name = name_raw[0].string.strip()
+        if not name_raw:
+            print(f"{bad} No name found on the page. Website structure may have changed.")
+            name = "Unknown"
+        else:
+            name = name_raw[0].string.strip()
+
+        index = data_raw.find('<p')
         data_main = []
         data_main_val = []
 
         while index != -1:
             iterator = 1
             index2 = data_raw.find('<p', index + iterator)
-            build_string = data_raw[index + 3: index2 - 4]
+            build_string = data_raw[index + 3: index2 - 4] if index2 != -1 else data_raw[index + 3:]
             data_main.append(build_string)
             index = index2
             iterator += 1
@@ -58,13 +76,14 @@ class Person(object):
             person_data[data_main[a]] = data_main_val[a]
 
         for b in range(len(data2)):
-            category[b] = category[b].string.strip()
+            cat_text = category[b].string if category[b].string else category[b].get_text(strip=True)
+            category[b] = cat_text.strip() if cat_text else "Unknown"
             data2[b] = strip_value(str(data2[b]))
-            data2[b] = data2[b].replace('&lt;', '<').replace('<br/>', '\n\t\t').replace('&quot;', '"')
+            data2[b] = data2[b].replace('<', '<').replace('<br/>', '\n\t\t').replace('"', '"')
             person_data[category[b]] = data2[b]
 
         self.name = name
-        self.gender = person_data.get('Gender)')
+        self.gender = person_data.get('Gender')
         self.race = person_data.get('Race')
         self.birthday = person_data.get('Birthday')
         self.street = person_data.get('Street')
@@ -140,9 +159,19 @@ class Person(object):
         self.country = person_data.get("Country")
         self.country_code = person_data.get("Country Code")
 
+        if target_gender and self.gender and self.gender.lower() != target_gender.lower():
+            print(f"{info} Generated gender ({self.gender}) does not match requested gender ({target_gender}). Regenerating...")
+            raise ValueError("Gender mismatch")
 
-def simpleinfogatherwithpic():
-    person = Person()
+def simpleinfogatherwithpic(gender=None):
+    while True:
+        try:
+            person = Person(gender)
+            break
+        except ValueError as e:
+            print(f"{bad} {e}")
+            time.sleep(1)
+
     print('%s Connecting to the internet' % info)
     time.sleep(0.5)
     print('%s Fetching Information' % info)
@@ -279,17 +308,19 @@ def simpleinfogatherwithpic():
     time.sleep(0.5)
     print('%s %sWeight: %s%s' % (res, blue, end, person.weight))
 
-    os.mkdir(person.name)
+    try:
+        os.mkdir(person.name)
+    except OSError as e:
+        print(f"{bad} Failed to create directory {person.name}: {e}")
+        sys.exit(1)
     os.chdir(person.name)
     os.system('curl https://thispersondoesnotexist.com/ --silent --output image.png')
-#    os.system('mv image image.jpeg')
     with open("%s.txt" % person.name, 'w') as file:
         file.write(data)
         file.close()
         print('%s More detailed information stored in %s./%s%s directory' % (info, green, person.name, end))
     person_name = person.name
     gender_by_name(person_name)
-
 
 def gender_by_name(person_name):
     a = str(person_name)
@@ -299,17 +330,14 @@ def gender_by_name(person_name):
     final_gender_from_name = d.get_gender('%s' % df)
     visual_main(a)
 
-
 ######################################################################################################################
 ################################################## Visual Code #######################################################
 ######################################################################################################################
 
 FACE_PROTO = "core/weights/opencv_face_detector.pbtxt"
 FACE_MODEL = "core/weights/opencv_face_detector_uint8.pb"
-
 AGE_PROTO = "core/weights/age_deploy.prototxt"
 AGE_MODEL = "core/weights/age_net.caffemodel"
-
 GENDER_PROTO = "core/weights/gender_deploy.prototxt"
 GENDER_MODEL = "core/weights/gender_net.caffemodel"
 
@@ -323,7 +351,6 @@ GENDER_LIST = ["male", "female"]
 
 box_padding = 20
 
-
 def get_face_box(net, frame, conf_threshold=0.7):
     frame_copy = frame.copy()
     frame_height = frame_copy.shape[0]
@@ -336,7 +363,6 @@ def get_face_box(net, frame, conf_threshold=0.7):
 
     for i in range(detections.shape[2]):
         confidence = detections[0, 0, i, 2]
-
         if confidence > conf_threshold:
             x1 = int(detections[0, 0, i, 3] * frame_width)
             y1 = int(detections[0, 0, i, 4] * frame_height)
@@ -344,33 +370,26 @@ def get_face_box(net, frame, conf_threshold=0.7):
             y2 = int(detections[0, 0, i, 6] * frame_height)
             boxes.append([x1, y1, x2, y2])
             cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 0), int(round(frame_height / 150)), 8)
-
     return frame_copy, boxes
-
 
 def age_gender_detector(input_path, person_name):
     image = cv2.imread(input_path)
     resized_image = cv2.resize(image, (640, 480))
-
     frame = resized_image.copy()
     frame_face, boxes = get_face_box(FACE_NET, frame)
-
     for box in boxes:
         face = frame[max(0, box[1] - box_padding):min(box[3] + box_padding, frame.shape[0] - 1), \
                max(0, box[0] - box_padding):min(box[2] + box_padding, frame.shape[1] - 1)]
-
         blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), MODEL_MEAN_VALUES, swapRB=False)
         GENDER_NET.setInput(blob)
         gender_predictions = GENDER_NET.forward()
         gender = GENDER_LIST[gender_predictions[0].argmax()]
         a = "{}".format(gender)
-
         AGE_NET.setInput(blob)
         age_predictions = AGE_NET.forward()
         age = AGE_LIST[age_predictions[0].argmax()]
         b = "{}".format(age)
         final_function(a, b, person_name)
-
 
 def final_function(a, b, person_name):
     gender_visual = a
@@ -390,12 +409,10 @@ def final_function(a, b, person_name):
         print('%s Exiting' % info)
         sys.exit(0)
 
-
 def visual_main(a):
     person_name = a
     location_of_pic = './image.png'
     output = age_gender_detector(location_of_pic, person_name)
 
-
-def maininfogather():
-    simpleinfogatherwithpic()
+def maininfogather(gender=None):
+    simpleinfogatherwithpic(gender)
